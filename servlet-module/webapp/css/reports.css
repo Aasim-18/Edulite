@@ -1,0 +1,121 @@
+:root {
+    color: #25231d;
+    background: #f8f7f2;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 2rem;
+}
+
+.report-sheet {
+    width: min(100%, 48rem);
+    margin: 0 auto;
+    padding: 2rem;
+    background: #fff;
+    border: 1px solid #e8dfbd;
+    box-shadow: 0 0.5rem 2rem rgb(70 61 30 / 8%);
+}
+
+.report-heading,
+.info-grid,
+.summary-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.report-heading {
+    align-items: flex-start;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #f4c842;
+}
+
+h1 {
+    margin: 0.3rem 0 0;
+}
+
+.eyebrow,
+.info-grid span,
+.summary-grid span {
+    color: #756e5b;
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.info-grid {
+    flex-wrap: wrap;
+    padding: 1.5rem 0;
+}
+
+.info-grid > div {
+    display: grid;
+    min-width: 40%;
+    gap: 0.3rem;
+}
+
+.summary-grid {
+    margin-bottom: 1.5rem;
+}
+
+.summary-grid > div {
+    display: grid;
+    flex: 1;
+    gap: 0.3rem;
+    padding: 0.75rem;
+    background: #fff8d9;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 0.8rem;
+    border-bottom: 1px solid #eee6c9;
+    text-align: left;
+}
+
+th {
+    background: #fffdf5;
+}
+
+.status {
+    font-weight: bold;
+}
+
+.generated {
+    color: #756e5b;
+    font-size: 0.8rem;
+}
+
+.print-button {
+    padding: 0.7rem 1rem;
+    color: #25231d;
+    background: #f4c842;
+    border: 0;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+@media print {
+    body {
+        padding: 0;
+        background: #fff;
+    }
+
+    .report-sheet {
+        width: auto;
+        border: 0;
+        box-shadow: none;
+    }
+
+    .print-button {
+        display: none;
+    }
+}

@@ -1,0 +1,11 @@
+node_modules/
+target/
+dist/
+.env
+.idea/
+.vscode/
+*.log
+application-local.properties
+db-passwords.txt
+passwords.env
+**/secrets/
