@@ -27,7 +27,15 @@ public class AttendanceReportServlet extends HttpServlet {
         }
 
         LocalDate to = parseDate(request.getParameter("to"), LocalDate.now());
+        if (to == null) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Dates must use yyyy-MM-dd format");
+            return;
+        }
         LocalDate from = parseDate(request.getParameter("from"), to.minusMonths(1));
+        if (from == null) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Dates must use yyyy-MM-dd format");
+            return;
+        }
         if (from.isAfter(to)) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "from must be before to");
             return;
@@ -67,14 +75,15 @@ public class AttendanceReportServlet extends HttpServlet {
         }
     }
 
-    private LocalDate parseDate(String value, LocalDate fallback) throws IOException {
+    // Returns null when the value is present but not a valid yyyy-MM-dd date
+    private LocalDate parseDate(String value, LocalDate fallback) {
         if (value == null || value.isBlank()) {
             return fallback;
         }
         try {
             return LocalDate.parse(value);
         } catch (DateTimeParseException exception) {
-            throw new IOException("Dates must use yyyy-MM-dd format", exception);
+            return null;
         }
     }
 }

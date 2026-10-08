@@ -1,33 +1,47 @@
+import { useState } from 'react';
+import {
+  BookOpen,
+  CalendarCheck,
+  CreditCard,
+  Receipt,
+  GraduationCap,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  StickyNote,
+  Users,
+  X,
+} from 'lucide-react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
 
 const navigationByRole = {
   ADMIN: [
-    { label: 'Dashboard', to: '/admin', end: true },
-    { label: 'Classes', to: '/admin/classes' },
-    { label: 'Teachers', to: '/admin/teachers' },
-    { label: 'Students', to: '/admin/students' },
-    { label: 'Fees', to: '/admin/fees' },
-    { label: 'Payments', to: '/admin/payments' },
+    { label: 'Dashboard', to: '/admin', end: true, icon: LayoutDashboard },
+    { label: 'Classes', to: '/admin/classes', icon: BookOpen },
+    { label: 'Teachers', to: '/admin/teachers', icon: GraduationCap },
+    { label: 'Students', to: '/admin/students', icon: Users },
+    { label: 'Fees', to: '/admin/fees', icon: Receipt },
+    { label: 'Payments', to: '/admin/payments', icon: CreditCard },
   ],
   TEACHER: [
-    { label: 'Dashboard', to: '/teacher', end: true },
-    { label: 'Attendance', to: '/teacher/attendance' },
-    { label: 'Notes', to: '/teacher/notes' },
+    { label: 'Dashboard', to: '/teacher', end: true, icon: LayoutDashboard },
+    { label: 'Attendance', to: '/teacher/attendance', icon: CalendarCheck },
+    { label: 'Notes', to: '/teacher/notes', icon: StickyNote },
   ],
   STUDENT: [
-    { label: 'Dashboard', to: '/student', end: true },
-    { label: 'Attendance', to: '/student/attendance' },
-    { label: 'Fees', to: '/student/fees' },
-    { label: 'Payments', to: '/student/payments' },
-    { label: 'Notes', to: '/student/notes' },
+    { label: 'Dashboard', to: '/student', end: true, icon: LayoutDashboard },
+    { label: 'Attendance', to: '/student/attendance', icon: CalendarCheck },
+    { label: 'Fees', to: '/student/fees', icon: Receipt },
+    { label: 'Payments', to: '/student/payments', icon: CreditCard },
+    { label: 'Notes', to: '/student/notes', icon: StickyNote },
   ],
 };
 
 function Navigation({ role, onNavigate }) {
   return (
     <nav className="sidebar-navigation" aria-label="Main navigation">
-      {navigationByRole[role].map((item) => (
+      {navigationByRole[role].map(({ icon: Icon, ...item }) => (
         <NavLink
           className={({ isActive }) =>
             isActive ? 'sidebar-link sidebar-link-active' : 'sidebar-link'
@@ -37,7 +51,10 @@ function Navigation({ role, onNavigate }) {
           onClick={onNavigate}
           to={item.to}
         >
-          {item.label}
+          <span className="sidebar-icon" aria-hidden="true">
+            <Icon size={18} strokeWidth={1.75} />
+          </span>
+          <span>{item.label}</span>
         </NavLink>
       ))}
     </nav>
@@ -47,6 +64,7 @@ function Navigation({ role, onNavigate }) {
 export default function AppLayout() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   function handleLogout() {
     logout();
@@ -54,11 +72,25 @@ export default function AppLayout() {
   }
 
   return (
-    <div className="app-layout">
-      <aside className="sidebar">
+    <div className={`app-layout ${isSidebarOpen ? 'sidebar-is-open' : ''}`}>
+      <button
+        aria-label="Close navigation menu"
+        className="sidebar-backdrop"
+        onClick={() => setSidebarOpen(false)}
+        type="button"
+      />
+      <aside className="sidebar" aria-label="Application sidebar">
         <div className="sidebar-header">
           <p className="brand-mark">EduFlow</p>
           <span className="brand-badge">Lite</span>
+          <button
+            aria-label="Close navigation menu"
+            className="sidebar-close"
+            onClick={() => setSidebarOpen(false)}
+            type="button"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         <div className="sidebar-user">
@@ -69,22 +101,30 @@ export default function AppLayout() {
           </div>
         </div>
 
-        <Navigation role={user.role} />
+        <Navigation role={user.role} onNavigate={() => setSidebarOpen(false)} />
 
         <button className="sidebar-logout" onClick={handleLogout} type="button">
+          <LogOut size={18} aria-hidden="true" />
           Log out
         </button>
       </aside>
 
       <div className="app-content">
         <header className="mobile-header">
-          <div>
+          <button
+            aria-expanded={isSidebarOpen}
+            aria-label="Open navigation menu"
+            className="mobile-menu-button"
+            onClick={() => setSidebarOpen(true)}
+            type="button"
+          >
+            <Menu size={22} />
+          </button>
+          <div className="mobile-header-brand">
             <p className="brand-mark">EduFlow <span>Lite</span></p>
             <span>{user.role} portal</span>
           </div>
-          <button className="button button-light" onClick={handleLogout} type="button">
-            Log out
-          </button>
+          <span className="mobile-header-spacer" aria-hidden="true" />
         </header>
         <main className="page-content">
           <Outlet />

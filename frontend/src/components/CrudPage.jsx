@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import DashboardShell from './DashboardShell';
 import DataTable from './DataTable';
 import PageState from './PageState';
@@ -23,10 +23,20 @@ export default function CrudPage({
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(initialForm);
   const [editingId, setEditingId] = useState(null);
+  const [formOpen, setFormOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const formRef = useRef(null);
+
+  // Scroll the form into view whenever it opens so the click has visible feedback
+  useEffect(() => {
+    if (formOpen && formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      formRef.current.querySelector('input, select, textarea')?.focus();
+    }
+  }, [formOpen]);
 
   async function refresh() {
     setLoading(true);
@@ -52,11 +62,21 @@ export default function CrudPage({
     setEditingId(null);
     setForm(initialForm);
     setMessage('');
+    setFormOpen(true);
   }
 
   function startEdit(item) {
     setEditingId(item[rowKey]);
     setForm(getEditForm(item));
+    setMessage('');
+    setFormOpen(true);
+  }
+
+  function closeForm() {
+    setFormOpen(false);
+    setEditingId(null);
+    setForm(initialForm);
+    setError('');
     setMessage('');
   }
 
@@ -75,6 +95,7 @@ export default function CrudPage({
       }
       setForm(initialForm);
       setEditingId(null);
+      setFormOpen(false);
       await refresh();
     } catch (saveError) {
       setError(getErrorMessage(saveError));
@@ -121,23 +142,25 @@ export default function CrudPage({
           rowKey={rowKey}
         />
       </PageState>
-      <form className="record-form" onSubmit={handleSubmit}>
-        <h2>{editingId ? 'Edit record' : 'Add record'}</h2>
-        <div className="form-grid">
-          {formFields.map((field) => (
-            <label key={field.name}>
-              {field.label}
-              {renderFormField(field, form, updateField)}
-            </label>
-          ))}
-        </div>
-        <div className="form-actions">
-          <button className="button button-primary compact-button" disabled={saving} type="submit">
-            {saving ? 'Saving...' : editingId ? 'Update' : 'Create'}
-          </button>
-          {editingId && <button className="button button-light compact-button" onClick={startCreate} type="button">Cancel</button>}
-        </div>
-      </form>
+      {formOpen && (
+        <form className="record-form" onSubmit={handleSubmit} ref={formRef}>
+          <h2>{editingId ? 'Edit record' : 'Add record'}</h2>
+          <div className="form-grid">
+            {formFields.map((field) => (
+              <label key={field.name}>
+                {field.label}
+                {renderFormField(field, form, updateField)}
+              </label>
+            ))}
+          </div>
+          <div className="form-actions">
+            <button className="button button-primary compact-button" disabled={saving} type="submit">
+              {saving ? 'Saving...' : editingId ? 'Update' : 'Create'}
+            </button>
+            <button className="button button-light compact-button" onClick={closeForm} type="button">Cancel</button>
+          </div>
+        </form>
+      )}
     </DashboardShell>
   );
 }

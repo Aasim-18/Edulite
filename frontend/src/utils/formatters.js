@@ -19,5 +19,8 @@ export function formatDate(value) {
 }
 
 export function getErrorMessage(error) {
+  if (error.message === 'Network Error') {
+    return 'Cannot reach the server. Make sure the backend is running on port 8080, then refresh.';
+  }
   return error.response?.data?.message || error.message || 'Unable to load data.';
 }

@@ -40,7 +40,6 @@
     <build>
         <finalName>eduflow-servlet-module</finalName>
         <sourceDirectory>src</sourceDirectory>
-        <webappDirectory>webapp</webappDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -54,6 +53,29 @@
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <warSourceDirectory>webapp</warSourceDirectory>
+                </configuration>
+            </plugin>
+            <!-- Runs the WAR on a local Tomcat 10.1 that Cargo downloads automatically.
+                 Usage: mvnw -f servlet-module/pom.xml package cargo:run -->
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven3-plugin</artifactId>
+                <version>1.10.19</version>
+                <configuration>
+                    <container>
+                        <containerId>tomcat10x</containerId>
+                        <zipUrlInstaller>
+                            <url>https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/10.1.57/tomcat-10.1.57.zip</url>
+                            <downloadDir>${project.build.directory}/cargo/downloads</downloadDir>
+                            <extractDir>${project.build.directory}/cargo/containers</extractDir>
+                        </zipUrlInstaller>
+                    </container>
+                    <configuration>
+                        <properties>
+                            <!-- 8081 so it never clashes with the Spring Boot backend on 8080 -->
+                            <cargo.servlet.port>8081</cargo.servlet.port>
+                        </properties>
+                    </configuration>
                 </configuration>
             </plugin>
         </plugins>
