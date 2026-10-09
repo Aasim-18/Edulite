@@ -1,6 +1,7 @@
 package com.eduflow.service;
 
 import com.eduflow.dto.FeeCreateRequest;
+import com.eduflow.dto.FeeReceiptResponse;
 import com.eduflow.dto.FeeResponse;
 import com.eduflow.entity.Fee;
 import com.eduflow.entity.Student;
@@ -50,6 +51,24 @@ public class FeeService {
     public FeeResponse getFeeForStudent(Long studentId) {
         return toResponse(feeRepository.findByStudentIdWithStudent(studentId)
                 .orElseThrow(() -> new FeeNotFoundException("Fee not found for student id: " + studentId)));
+    }
+
+    public FeeReceiptResponse getReceipt(Long studentId) {
+        Fee fee = feeRepository.findByStudentIdWithStudent(studentId)
+                .orElseThrow(() -> new FeeNotFoundException("Fee record not found for student id: " + studentId));
+        Student student = fee.getStudent();
+        return new FeeReceiptResponse(
+                fee.getId(),
+                student.getId(),
+                student.getUser().getName(),
+                student.getUser().getEmail(),
+                student.getRollNumber(),
+                student.getSchoolClass().getName(),
+                fee.getTotalAmount(),
+                fee.getPaidAmount(),
+                fee.getPendingAmount(),
+                fee.getStatus().name()
+        );
     }
 
     public Fee getFeeEntity(Long id) {

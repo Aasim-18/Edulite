@@ -122,6 +122,11 @@ public class AdminController {
                 .body(feeService.createFee(request));
     }
 
+    @GetMapping("/fees/{studentId}/receipt")
+    public FeeReceiptResponse feeReceipt(@PathVariable Long studentId) {
+        return feeService.getReceipt(studentId);
+    }
+
     // ---- Payments ----
 
     @PostMapping("/payments")

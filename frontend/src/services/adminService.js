@@ -33,3 +33,4 @@ export const createFee = (payload) => create('/admin/fees', payload);
 export const getPayments = (studentId) =>
   get(studentId ? `/admin/payments?studentId=${studentId}` : '/admin/payments');
 export const createPayment = (payload) => create('/admin/payments', payload);
+export const getFeeReceipt = (studentId) => get(`/admin/fees/${studentId}/receipt`);

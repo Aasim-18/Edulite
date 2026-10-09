@@ -29,3 +29,8 @@ export async function getStudentNotes() {
   const response = await apiClient.get('/student/notes');
   return response.data;
 }
+
+export async function getStudentReceipt() {
+  const response = await apiClient.get('/student/receipt');
+  return response.data;
+}

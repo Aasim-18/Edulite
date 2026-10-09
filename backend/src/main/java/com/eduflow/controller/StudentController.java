@@ -37,6 +37,11 @@ public class StudentController {
         return studentPortalService.getFee(principal.getName());
     }
 
+    @GetMapping("/receipt")
+    public FeeReceiptResponse receipt(Principal principal) {
+        return studentPortalService.getReceipt(principal.getName());
+    }
+
     @GetMapping("/payments")
     public List<PaymentResponse> payments(Principal principal) {
         return studentPortalService.getPayments(principal.getName());

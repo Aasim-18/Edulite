@@ -110,6 +110,9 @@ Fee status: `PENDING` | `PARTIAL` | `PAID`
 `POST /api/admin/fees` (201) with `{ "studentId": 1, "totalAmount": 50000.00 }`
 → creates a fee with `paidAmount` 0, `pendingAmount == totalAmount`, status `PENDING`. One fee per student (duplicate → 409).
 
+`GET /api/admin/fees/{studentId}/receipt` → fee receipt (404 if no fee record):
+`{ "receiptId", "studentId", "studentName", "email", "rollNumber", "className", "totalAmount", "paidAmount", "pendingAmount", "status" }`
+
 ### Payments
 
 `POST /api/admin/payments` (201) with:
@@ -181,6 +184,9 @@ All responses are scoped to the logged-in user (from the JWT).
 ```
 
 `GET /api/student/fees` → `{ "id", "studentId", "studentName", "rollNumber", "totalAmount", "paidAmount", "pendingAmount", "status" }` (404 if no fee record)
+
+`GET /api/student/receipt` → own fee receipt (404 if no fee record):
+`{ "receiptId", "studentId", "studentName", "email", "rollNumber", "className", "totalAmount", "paidAmount", "pendingAmount", "status" }`
 
 `GET /api/student/payments` → `[{ "id", "feeId", "studentId", "studentName", "amount", "paymentDate", "method", "receivedBy" }]`
 

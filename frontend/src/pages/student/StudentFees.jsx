@@ -1,18 +1,31 @@
 import { useEffect, useState } from 'react';
 import DashboardShell from '../../components/DashboardShell';
 import ErrorMessage from '../../components/ErrorMessage';
+import FeeReceipt from '../../components/FeeReceipt';
 import LoadingState from '../../components/LoadingState';
 import StatCard from '../../components/StatCard';
-import { getStudentFees } from '../../services/studentService';
+import { getStudentFees, getStudentReceipt } from '../../services/studentService';
 import { formatCurrency, getErrorMessage } from '../../utils/formatters';
 
 export default function StudentFees() {
   const [fees, setFees] = useState(null);
   const [error, setError] = useState('');
+  const [receipt, setReceipt] = useState(null);
+  const [receiptError, setReceiptError] = useState('');
 
   useEffect(() => {
     getStudentFees().then(setFees).catch((loadError) => setError(getErrorMessage(loadError)));
   }, []);
+
+  async function showReceipt() {
+    setReceiptError('');
+    setReceipt(null);
+    try {
+      setReceipt(await getStudentReceipt());
+    } catch (loadError) {
+      setReceiptError(getErrorMessage(loadError));
+    }
+  }
 
   if (error) {
     return <ErrorMessage message={error} />;
@@ -45,6 +58,13 @@ export default function StudentFees() {
           <span style={{ width: `${paidPercentage}%` }} />
         </div>
       </div>
+      <div className="toolbar">
+        <button className="button button-primary compact-button" onClick={showReceipt} type="button">
+          Print receipt
+        </button>
+      </div>
+      {receiptError && <div className="inline-error">{receiptError}</div>}
+      {receipt && <FeeReceipt receipt={receipt} onClose={() => setReceipt(null)} />}
     </DashboardShell>
   );
 }

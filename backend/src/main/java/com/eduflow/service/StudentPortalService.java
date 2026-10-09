@@ -2,6 +2,7 @@ package com.eduflow.service;
 
 import com.eduflow.dto.AttendanceResponse;
 import com.eduflow.dto.AttendanceSummaryResponse;
+import com.eduflow.dto.FeeReceiptResponse;
 import com.eduflow.dto.FeeResponse;
 import com.eduflow.dto.NoteResponse;
 import com.eduflow.dto.PaymentResponse;
@@ -44,6 +45,10 @@ public class StudentPortalService {
 
     public FeeResponse getFee(String email) {
         return feeService.getFeeForStudent(getStudentForUser(email).getId());
+    }
+
+    public FeeReceiptResponse getReceipt(String email) {
+        return feeService.getReceipt(getStudentForUser(email).getId());
     }
 
     public List<PaymentResponse> getPayments(String email) {
