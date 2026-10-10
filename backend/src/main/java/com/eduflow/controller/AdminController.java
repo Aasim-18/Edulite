@@ -7,6 +7,7 @@ import com.eduflow.service.ClassService;
 import com.eduflow.service.CurrentUserService;
 import com.eduflow.service.DashboardService;
 import com.eduflow.service.FeeService;
+import com.eduflow.service.NoticeService;
 import com.eduflow.service.PaymentService;
 import com.eduflow.service.StudentService;
 import com.eduflow.service.TeacherService;
@@ -30,6 +31,7 @@ public class AdminController {
     private final FeeService feeService;
     private final DashboardService dashboardService;
     private final PaymentService paymentService;
+    private final NoticeService noticeService;
     private final CurrentUserService currentUserService;
 
     @GetMapping("/dashboard")
@@ -140,5 +142,20 @@ public class AdminController {
     @GetMapping("/payments")
     public List<PaymentResponse> listPayments(@RequestParam(required = false) Long studentId) {
         return paymentService.listPayments(studentId);
+    }
+
+    // ---- Notices ----
+
+    @PostMapping("/notices")
+    public ResponseEntity<NoticeResponse> createNotice(
+            @Valid @RequestBody NoticeRequest request, Principal principal) {
+        User admin = currentUserService.getCurrentUser(principal.getName());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(noticeService.create(request, admin));
+    }
+
+    @GetMapping("/notices")
+    public List<NoticeResponse> listNotices() {
+        return noticeService.listAll();
     }
 }

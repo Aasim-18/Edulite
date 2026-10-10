@@ -3,6 +3,7 @@ import DashboardShell from '../../components/DashboardShell';
 import EmptyState from '../../components/EmptyState';
 import ErrorMessage from '../../components/ErrorMessage';
 import LoadingState from '../../components/LoadingState';
+import Modal from '../../components/Modal';
 import { createTeacherNote, getTeacherClasses, getTeacherNotes } from '../../services/teacherService';
 import { formatDate, getErrorMessage } from '../../utils/formatters';
 
@@ -14,6 +15,7 @@ export default function TeacherNotes() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
   async function loadNotes(id) {
     setNotes(await getTeacherNotes(id));
@@ -50,6 +52,7 @@ export default function TeacherNotes() {
     try {
       await createTeacherNote({ classId: Number(classId), ...form });
       setForm({ title: '', content: '' });
+      setShowForm(false);
       await loadNotes(classId);
       setMessage('Note posted successfully.');
     } catch (saveError) {
@@ -74,14 +77,20 @@ export default function TeacherNotes() {
       </div>
       {error && <div className="inline-error">{error}</div>}
       {message && <div className="inline-success">{message}</div>}
-      <form className="record-form" onSubmit={handleSubmit}>
-        <h2>Post a note</h2>
-        <div className="form-grid">
-          <label>Title<input required value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /></label>
-          <label className="full-field">Content<textarea required rows="4" value={form.content} onChange={(event) => setForm({ ...form, content: event.target.value })} /></label>
-        </div>
-        <button className="button button-primary compact-button" disabled={saving} type="submit">{saving ? 'Posting...' : 'Post note'}</button>
-      </form>
+      <div className="toolbar">
+        <button className="button button-primary compact-button" onClick={() => setShowForm(true)} type="button">Post a note</button>
+      </div>
+      {showForm && (
+        <Modal title="Post a note" onClose={() => setShowForm(false)}>
+          <form className="record-form" onSubmit={handleSubmit}>
+            <div className="form-grid">
+              <label>Title<input required value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /></label>
+              <label className="full-field">Content<textarea required rows="4" value={form.content} onChange={(event) => setForm({ ...form, content: event.target.value })} /></label>
+            </div>
+            <button className="button button-primary compact-button" disabled={saving} type="submit">{saving ? 'Posting...' : 'Post note'}</button>
+          </form>
+        </Modal>
+      )}
       {!notes.length ? <EmptyState title="No notes posted" /> : (
         <div className="notes-grid">
           {notes.map((note) => (

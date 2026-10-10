@@ -1,4 +1,5 @@
 import { apiClient } from './api';
+import { saveBlob } from '../utils/download';
 
 export async function getStudentProfile() {
   const response = await apiClient.get('/student/profile');
@@ -32,5 +33,20 @@ export async function getStudentNotes() {
 
 export async function getStudentReceipt() {
   const response = await apiClient.get('/student/receipt');
+  return response.data;
+}
+
+export async function getStudentMaterial() {
+  const response = await apiClient.get('/student/material');
+  return response.data;
+}
+
+export async function downloadStudentMaterial(id, fileName) {
+  const response = await apiClient.get(`/student/material/${id}/download`, { responseType: 'blob' });
+  saveBlob(response.data, fileName);
+}
+
+export async function getStudentNotices() {
+  const response = await apiClient.get('/student/notices');
   return response.data;
 }

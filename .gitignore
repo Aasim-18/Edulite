@@ -9,3 +9,4 @@ application-local.properties
 db-passwords.txt
 passwords.env
 **/secrets/
+uploads/

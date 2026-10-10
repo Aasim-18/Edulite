@@ -7,14 +7,20 @@ import StudentAttendance from './pages/student/StudentAttendance';
 import StudentFees from './pages/student/StudentFees';
 import StudentPayments from './pages/student/StudentPayments';
 import StudentNotes from './pages/student/StudentNotes';
+import StudentMaterial from './pages/student/StudentMaterial';
+import StudentNotices from './pages/student/StudentNotices';
 import TeacherAttendance from './pages/teacher/TeacherAttendance';
+import TeacherDashboard from './pages/TeacherDashboard';
 import TeacherNotes from './pages/teacher/TeacherNotes';
+import TeacherMaterial from './pages/teacher/TeacherMaterial';
+import TeacherNotices from './pages/teacher/TeacherNotices';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ClassesPage from './pages/admin/ClassesPage';
 import TeachersPage from './pages/admin/TeachersPage';
 import StudentsPage from './pages/admin/StudentsPage';
 import FeesPage from './pages/admin/FeesPage';
 import PaymentsPage from './pages/admin/PaymentsPage';
+import AdminNotices from './pages/admin/AdminNotices';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './hooks/AuthContext';
 
@@ -56,6 +62,7 @@ export default function App() {
         <Route path="students" element={<StudentsPage />} />
         <Route path="fees" element={<FeesPage />} />
         <Route path="payments" element={<PaymentsPage />} />
+        <Route path="notices" element={<AdminNotices />} />
       </Route>
       <Route
         path="/teacher"
@@ -65,9 +72,11 @@ export default function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<TeacherAttendance />} />
+        <Route index element={<TeacherDashboard />} />
         <Route path="attendance" element={<TeacherAttendance />} />
         <Route path="notes" element={<TeacherNotes />} />
+        <Route path="material" element={<TeacherMaterial />} />
+        <Route path="notices" element={<TeacherNotices />} />
       </Route>
       <Route
         path="/student"
@@ -82,6 +91,8 @@ export default function App() {
         <Route path="fees" element={<StudentFees />} />
         <Route path="payments" element={<StudentPayments />} />
         <Route path="notes" element={<StudentNotes />} />
+        <Route path="material" element={<StudentMaterial />} />
+        <Route path="notices" element={<StudentNotices />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

@@ -17,9 +17,14 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler({SchoolClassNotFoundException.class, StudentNotFoundException.class,
-            TeacherNotFoundException.class, FeeNotFoundException.class})
+            TeacherNotFoundException.class, FeeNotFoundException.class, MaterialNotFoundException.class})
     public ResponseEntity<Map<String, Object>> handleNotFound(RuntimeException ex) {
         return build(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(MaterialAccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleMaterialAccessDenied(MaterialAccessDeniedException ex) {
+        return build(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
@@ -43,8 +48,8 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.CONFLICT, ex.getMessage());
     }
 
-    @ExceptionHandler(InvalidPaymentException.class)
-    public ResponseEntity<Map<String, Object>> handleInvalidPayment(InvalidPaymentException ex) {
+    @ExceptionHandler({InvalidPaymentException.class, InvalidFileException.class, InvalidNoticeException.class})
+    public ResponseEntity<Map<String, Object>> handleBadRequest(RuntimeException ex) {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

@@ -3,10 +3,12 @@ import {
   BookOpen,
   CalendarCheck,
   CreditCard,
+  FileText,
   Receipt,
   GraduationCap,
   LayoutDashboard,
   LogOut,
+  Megaphone,
   Menu,
   StickyNote,
   Users,
@@ -14,6 +16,7 @@ import {
 } from 'lucide-react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
+import LoadingBar from './LoadingBar';
 
 const navigationByRole = {
   ADMIN: [
@@ -23,11 +26,14 @@ const navigationByRole = {
     { label: 'Students', to: '/admin/students', icon: Users },
     { label: 'Fees', to: '/admin/fees', icon: Receipt },
     { label: 'Payments', to: '/admin/payments', icon: CreditCard },
+    { label: 'Notices', to: '/admin/notices', icon: Megaphone },
   ],
   TEACHER: [
     { label: 'Dashboard', to: '/teacher', end: true, icon: LayoutDashboard },
     { label: 'Attendance', to: '/teacher/attendance', icon: CalendarCheck },
     { label: 'Notes', to: '/teacher/notes', icon: StickyNote },
+    { label: 'Material', to: '/teacher/material', icon: FileText },
+    { label: 'Notices', to: '/teacher/notices', icon: Megaphone },
   ],
   STUDENT: [
     { label: 'Dashboard', to: '/student', end: true, icon: LayoutDashboard },
@@ -35,6 +41,8 @@ const navigationByRole = {
     { label: 'Fees', to: '/student/fees', icon: Receipt },
     { label: 'Payments', to: '/student/payments', icon: CreditCard },
     { label: 'Notes', to: '/student/notes', icon: StickyNote },
+    { label: 'Material', to: '/student/material', icon: FileText },
+    { label: 'Notices', to: '/student/notices', icon: Megaphone },
   ],
 };
 
@@ -110,6 +118,7 @@ export default function AppLayout() {
       </aside>
 
       <div className="app-content">
+        <LoadingBar />
         <header className="mobile-header">
           <button
             aria-expanded={isSidebarOpen}

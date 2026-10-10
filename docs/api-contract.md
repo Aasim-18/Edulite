@@ -127,6 +127,17 @@ Fee status: `PENDING` | `PARTIAL` | `PAID`
 `GET /api/admin/payments?studentId=` → `[{ "id", "feeId", "studentId", "studentName", "amount", "paymentDate", "method", "receivedBy" }]`
 - Without `studentId`: all payments. With `studentId`: payments for that student.
 
+### Notices
+
+`POST /api/admin/notices` (201) with:
+```json
+{ "title": "Semester Break", "content": "Classes resume on 1st March.", "audience": "ALL" }
+```
+`audience`: `ALL` | `STUDENTS` | `TEACHERS` (invalid value → 400).
+
+`GET /api/admin/notices`
+→ `[{ "id", "authorId", "authorName", "title", "content", "audience", "createdAt" }]` — all notices, newest first.
+
 ---
 
 ## Teacher — `/api/teacher/**` (roles: TEACHER or ADMIN)
@@ -168,6 +179,24 @@ Updates existing rows, creates rows that don't exist yet.
 
 `POST /api/teacher/notes` (201) with `{ "classId": 1, "title": "Revision", "content": "Bring notes tomorrow" }`
 
+### Study material (PDF)
+
+`GET /api/teacher/material?classId=1`
+→ `[{ "id", "classId", "className", "teacherId", "teacherName", "title", "fileName", "fileSize", "createdAt" }]`
+
+`POST /api/teacher/material` (201) — `multipart/form-data`:
+- `classId` (number), `title` (text), `file` (PDF, max 5 MB)
+→ `{ "id", "classId", "className", "teacherId", "teacherName", "title", "fileName", "fileSize", "createdAt" }`
+- Non-PDF file, empty file, or a file over 5 MB → 400.
+
+`GET /api/teacher/material/{id}/download`
+→ the PDF as `attachment` (`Content-Disposition`) with the original file name.
+
+### Notices (admin posts, teachers read)
+
+`GET /api/teacher/notices`
+→ `[{ "id", "authorId", "authorName", "title", "content", "audience", "createdAt" }]` — only notices whose `audience` is `ALL` or `TEACHERS`.
+
 ---
 
 ## Student — `/api/student/**` (roles: STUDENT or ADMIN)
@@ -192,6 +221,15 @@ All responses are scoped to the logged-in user (from the JWT).
 
 `GET /api/student/notes` → `[{ "id", "classId", "className", "teacherId", "teacherName", "title", "content", "createdAt" }]`
 
+`GET /api/student/material`
+→ `[{ "id", "classId", "className", "teacherId", "teacherName", "title", "fileName", "fileSize", "createdAt" }]` — materials for the logged-in student's class.
+
+`GET /api/student/material/{id}/download`
+→ the PDF as `attachment`. 403 if the material belongs to another class.
+
+`GET /api/student/notices`
+→ `[{ "id", "authorId", "authorName", "title", "content", "audience", "createdAt" }]` — only notices whose `audience` is `ALL` or `STUDENTS`.
+
 ---
 
 ## Health
@@ -206,5 +244,6 @@ All responses are scoped to the logged-in user (from the JWT).
 ## Notes for the frontend
 - Dates submitted as `yyyy-MM-dd` (e.g. `2026-03-01`).
 - Money fields are numbers with decimals (`totalAmount`), not currency strings.
-- No CORS is configured — call via a proxy or same-origin setup if needed.
+- CORS is enabled for `http://localhost:5173` and `http://127.0.0.1:5173`.
 - `DELETE` returns `204 No Content` (empty body).
+- File uploads use `multipart/form-data`; don't send a JSON `Content-Type` header.

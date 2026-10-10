@@ -18,6 +18,13 @@ export function formatDate(value) {
   }).format(new Date(`${value}T00:00:00`));
 }
 
+export function formatBytes(value) {
+  const bytes = Number(value || 0);
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
 export function getErrorMessage(error) {
   if (error.message === 'Network Error') {
     return 'Cannot reach the server. Make sure the backend is running on port 8080, then refresh.';

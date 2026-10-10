@@ -36,6 +36,7 @@ import {
 import { useAuth } from '../../hooks/AuthContext';
 import {
   getAdminDashboard,
+  getAdminNotices,
   getClasses,
   getFees,
   getPayments,
@@ -404,14 +405,27 @@ export default function AdminDashboard() {
   useEffect(() => {
     let cancelled = false;
 
+    // Side sections (classes/students/fees/payments/attendance) are optional:
+    // if one of them blips, keep the rest of the dashboard working instead of
+    // failing the entire page. Only the main dashboard call is critical.
+    async function safeGet(request, fallback = []) {
+      try {
+        return await request();
+      } catch (requestError) {
+        console.warn('Dashboard section failed to load:', requestError.message);
+        return fallback;
+      }
+    }
+
     async function load() {
       try {
-        const [dashboard, classes, students, fees, payments] = await Promise.all([
-          getAdminDashboard(),
-          getClasses(),
-          getStudents(),
-          getFees(),
-          getPayments(),
+        const dashboard = await getAdminDashboard();
+        const [classes, students, fees, payments, notices] = await Promise.all([
+          safeGet(getClasses),
+          safeGet(getStudents),
+          safeGet(getFees),
+          safeGet(getPayments),
+          safeGet(getAdminNotices),
         ]);
 
         // Today's present/absent/late counts are aggregated from each class's
@@ -420,11 +434,11 @@ export default function AdminDashboard() {
           new Date().getMonth() + 1,
         )}-${padTwo(new Date().getDate())}`;
         const perClass = classes.length
-          ? await Promise.all(classes.map((entry) => getAttendance(entry.id, today)))
+          ? await Promise.all(classes.map((entry) => safeGet(() => getAttendance(entry.id, today))))
           : [];
 
         if (!cancelled) {
-          setData({ dashboard, classes, students, fees, payments, attendanceRecords: perClass.flat() });
+          setData({ dashboard, classes, students, fees, payments, notices, attendanceRecords: perClass.flat() });
         }
       } catch (loadError) {
         if (!cancelled) {
@@ -452,6 +466,7 @@ export default function AdminDashboard() {
   const perClass = useMemo(() => (data ? buildStudentsPerClass(data.students) : []), [data]);
   const topPending = useMemo(() => (data ? buildTopPendingFees(data.fees) : []), [data]);
   const recentPayments = useMemo(() => (data ? buildRecentPayments(data.payments) : []), [data]);
+  const announcements = useMemo(() => (data ? data.notices.slice(0, 5) : []), [data]);
 
   const entrance = (delay = 0) =>
     reduced
@@ -518,8 +533,8 @@ export default function AdminDashboard() {
       <div className="dash-info-strip" role="note">
         <Info size={16} aria-hidden="true" />
         <span>
-          <strong>Sample data:</strong> the 7-day trend, stat-card sparklines and announcements
-          have no backend endpoint yet, so those areas are shown as marked <em>sample</em> data.
+          <strong>Sample data:</strong> the 7-day trend and stat-card sparklines have no backend
+          endpoint yet, so those areas are shown as marked <em>sample</em> data.
         </span>
       </div>
 
@@ -753,22 +768,37 @@ export default function AdminDashboard() {
             title="Latest announcements"
             subtitle="School-wide notices"
             icon={Megaphone}
-            sample
+            action={
+              <Link to="/admin/notices" className="ui-button ui-button-secondary dash-card-action">
+                All notices
+              </Link>
+            }
           >
-            <div className="dash-announcements">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <div className="dash-announcement" key={index} aria-hidden="true">
-                  <Skeleton width="55%" height="0.9rem" />
-                  <Skeleton width="100%" height="0.75rem" />
-                  <Skeleton width="100%" height="0.75rem" />
-                  <Skeleton width="66%" height="0.75rem" />
-                </div>
-              ))}
-            </div>
-            <p className="dash-missing-note">
-              <Info size={13} aria-hidden="true" />
-              No <code>GET /api/announcements</code> endpoint yet — placeholders shown instead.
-            </p>
+            {announcements.length ? (
+              <div className="dash-announcements">
+                {announcements.map((notice) => (
+                  <div className="dash-announcement" key={notice.id}>
+                    <strong>{notice.title}</strong>
+                    <span>
+                      {notice.content}
+                    </span>
+                    <em>
+                      {notice.audience === 'ALL'
+                        ? 'Everyone'
+                        : notice.audience === 'STUDENTS'
+                          ? 'Students'
+                          : 'Teachers'}{' '}
+                      · {formatDate(notice.createdAt?.slice(0, 10))}
+                    </em>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                title="No notices yet"
+                message="Post a notice from the Notices page."
+              />
+            )}
           </ChartCard>
         </motion.div>
       </div>

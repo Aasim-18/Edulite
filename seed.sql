@@ -75,3 +75,9 @@ INSERT INTO notes (class_id, teacher_id, title, content) VALUES
     (1, 2, 'Unit 2 Syllabus', 'OOP concepts, exception handling, and JDBC basics. Exam on 20th.'),
     (1, 2, 'Lab This Week', 'Bring laptops. JDBC connectivity lab in room 204.'),
     (2, 3, 'Assignment 1', 'Submit Spring Boot REST API mini project by Friday.');
+
+-- Notices (admin = user 1)
+INSERT INTO notices (author_id, title, content, audience) VALUES
+    (1, 'Semester Break', 'Classes resume on 1st March. Results are out on the portal.', 'ALL'),
+    (1, 'Fee Reminder', 'Students with pending fees must clear them before the mid-term exam.', 'STUDENTS'),
+    (1, 'Staff Meeting', 'All teachers are requested to attend the monthly meeting on Friday at 3 PM in Room 101.', 'TEACHERS');

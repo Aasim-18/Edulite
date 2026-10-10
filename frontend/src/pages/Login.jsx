@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
+import LoadingBar from '../components/LoadingBar';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ export default function Login() {
 
   return (
     <main className="auth-shell">
+      <LoadingBar />
       <form className="auth-card" onSubmit={handleSubmit}>
         <p className="eyebrow">EduFlow Lite</p>
         <h1>Sign in</h1>

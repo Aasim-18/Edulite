@@ -69,3 +69,28 @@ CREATE TABLE notes (
     content TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Study material: a PDF shared by a teacher with a class.
+-- The file itself is stored on the backend's filesystem (uploads/ folder);
+-- only its metadata lives here.
+CREATE TABLE study_materials (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    class_id BIGINT NOT NULL REFERENCES classes (id),
+    teacher_id BIGINT NOT NULL REFERENCES users (id),
+    title VARCHAR(200) NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    stored_name VARCHAR(255) NOT NULL,
+    file_size BIGINT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Notices sent by the admin.
+-- audience decides who can see the notice: everyone, students only, or teachers only.
+CREATE TABLE notices (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    author_id BIGINT NOT NULL REFERENCES users (id),
+    title VARCHAR(200) NOT NULL,
+    content TEXT NOT NULL,
+    audience VARCHAR(20) NOT NULL CHECK (audience IN ('ALL', 'STUDENTS', 'TEACHERS')),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
