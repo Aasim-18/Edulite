@@ -2,7 +2,10 @@ import axios from 'axios';
 import { endRequest, startRequest } from './requestProgress';
 
 export const apiClient = axios.create({
-  baseURL: '/api',
+  // '/api' goes through the Vite dev proxy (vite.config.js) in local dev.
+  // When the frontend is hosted (Vercel/Netlify), set VITE_API_BASE_URL
+  // to the deployed backend URL, e.g. https://edulite-5i8s.onrender.com
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
 });
 
 // axios sets Content-Type automatically: application/json for JSON bodies,

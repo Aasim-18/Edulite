@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'https://edulite-5i8s.onrender.com',
         changeOrigin: true,
       },
     },
