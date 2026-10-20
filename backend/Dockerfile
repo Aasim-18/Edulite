@@ -21,6 +21,9 @@ RUN addgroup -S app && adduser -S app -G app
 WORKDIR /app
 COPY --from=build /app/app.jar app.jar
 
+# Upload folder must exist and be writable by the non-root user
+RUN mkdir -p /app/uploads && chown app:app /app/uploads
+
 USER app
 EXPOSE 8080
 
